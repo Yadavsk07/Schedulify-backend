@@ -15,7 +15,9 @@ public class GlobalCORSConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedHeaders("*")
-                        .allowedMethods("*")
+                        .allowedMethods(
+                                "GET", "POST", "PUT", "DELETE", "OPTIONS"
+                        )
                         .allowedOrigins("https://schedulify01.netlify.app");
             }
         };
