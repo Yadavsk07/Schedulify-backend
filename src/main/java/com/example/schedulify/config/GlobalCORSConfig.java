@@ -16,7 +16,7 @@ public class GlobalCORSConfig {
                 registry.addMapping("/**")
                         .allowedHeaders("*")
                         .allowedMethods("*")
-                        .allowedOrigins("*");
+                        .allowedOrigins("https://schedulify01.netlify.app");
             }
         };
     }
