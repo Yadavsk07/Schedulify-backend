@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://schedulify01.netlify.app/")
 public class AdminController {
 
     private final TeacherRepository teacherRepository;
