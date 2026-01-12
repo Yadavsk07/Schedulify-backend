@@ -29,6 +29,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 // ❌ Disable default login & logout
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.disable())
@@ -37,7 +39,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 // ✅ Enable CORS (uses bean below)
-                .cors(Customizer.withDefaults())
+                //.cors(Customizer.withDefaults())
 
                 // ✅ Stateless JWT auth
                 .sessionManagement(sm ->
@@ -76,7 +78,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("https://schedulify01.netlify.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
