@@ -8,6 +8,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -24,14 +27,29 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
+    // 🔥 REGISTER FIREWALL (CRITICAL)
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.httpFirewall(httpFirewall());
+    }
+
+    @Bean
+    public HttpFirewall httpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowSemicolon(true);
+        firewall.setAllowUrlEncodedSlash(true);
+        firewall.setAllowBackSlash(true);
+        firewall.setAllowUrlEncodedPercent(true);
+        return firewall;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // ✅ CORS MUST be first
+                // 🔥 CORS MUST be first
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // ✅ Stateless API
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.disable())
@@ -40,10 +58,8 @@ public class SecurityConfig {
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // ✅ Authorization
                 .authorizeHttpRequests(auth -> auth
-
-                        // Allow preflight
+                        // 🔥 Allow preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // Public endpoints
@@ -54,17 +70,17 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        // Everything else requires JWT
+                        // Secure everything else
                         .anyRequest().authenticated()
                 )
 
-                // ✅ JWT AFTER CORS
+                // 🔥 JWT AFTER CORS
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // ✅ GLOBAL CORS CONFIGURATION
+    // ✅ GLOBAL CORS CONFIG
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -88,7 +104,6 @@ public class SecurityConfig {
                 "Authorization"
         ));
 
-        // JWT via header → NO cookies
         config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source =
