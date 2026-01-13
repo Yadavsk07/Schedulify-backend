@@ -3,7 +3,6 @@ package com.example.schedulify.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -29,30 +28,25 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                // ✅ CORS MUST be first
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // ❌ Disable default login & logout
+                // ✅ Stateless API
+                .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.disable())
 
-                // ❌ Disable CSRF (API based)
-                .csrf(csrf -> csrf.disable())
-
-                // ✅ Enable CORS (uses bean below)
-                //.cors(Customizer.withDefaults())
-
-                // ✅ Stateless JWT auth
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // ✅ Authorization rules
+                // ✅ Authorization
                 .authorizeHttpRequests(auth -> auth
 
-                        // 🔓 Allow CORS preflight
+                        // Allow preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 🔓 Public APIs
+                        // Public endpoints
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/schools/**",
@@ -60,17 +54,17 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        // 🔒 Everything else secured
-                        .anyRequest().permitAll()
+                        // Everything else requires JWT
+                        .anyRequest().authenticated()
                 )
 
-                // ✅ JWT filter
+                // ✅ JWT AFTER CORS
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // ✅ Global CORS configuration
+    // ✅ GLOBAL CORS CONFIGURATION
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -94,7 +88,8 @@ public class SecurityConfig {
                 "Authorization"
         ));
 
-        config.setAllowCredentials(false); // true ONLY if using cookies
+        // JWT via header → NO cookies
+        config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
@@ -102,5 +97,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
 }
