@@ -16,18 +16,23 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-    public JwtFilter(JwtUtil jwtUtil) { this.jwtUtil = jwtUtil; }
+    public JwtFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
+        // ✅ CRITICAL: allow CORS preflight
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_OK);
             return;
         }
+
+        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (auth != null && auth.startsWith("Bearer ")) {
             String token = auth.substring(7);
@@ -35,9 +40,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.parse(token);
                 request.setAttribute("jwtClaims", claims);
             } catch (Exception ex) {
-                // invalid token -> ignore claims, controllers will handle
+                // invalid token -> ignore, controllers handle auth
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }
+
