@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "https://schedulify01.netlify.app/")
+//@CrossOrigin(origins = "https://schedulify01.netlify.app/")
 @RequestMapping("/api/admin")
 
 public class AdminController {
