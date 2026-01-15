@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin
+@CrossOrigin(origins = "https://schedulify01.netlify.app/")
 public class AuthController {
 
     private final SchoolRepository schoolRepo;
