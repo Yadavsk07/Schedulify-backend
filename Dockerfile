@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jdk
 
-ARG CACHE_BUST=1
+ARG CACHE_BUST=5
 RUN echo "Cache bust: $CACHE_BUST"
 
 WORKDIR /app
