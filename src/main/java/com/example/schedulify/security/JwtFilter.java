@@ -27,11 +27,11 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // ✅ VERY IMPORTANT: allow CORS preflight requests
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
-        }
+//        // ✅ VERY IMPORTANT: allow CORS preflight requests
+//        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+//            response.setStatus(HttpServletResponse.SC_OK);
+//            return;
+//        }
 
         String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
 
