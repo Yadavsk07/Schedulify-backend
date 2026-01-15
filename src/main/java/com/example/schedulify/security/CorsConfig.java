@@ -16,7 +16,7 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
+        config.setAllowedOriginPatterns(List.of(
                 "https://schedulify01.netlify.app"
         ));
 
@@ -25,6 +25,7 @@ public class CorsConfig {
         ));
 
         config.setAllowedHeaders(List.of(
+                "*",
                 "Authorization",
                 "Content-Type",
                 "Accept"
