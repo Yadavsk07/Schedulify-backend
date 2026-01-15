@@ -1,13 +1,16 @@
-# Use official Java runtime
 FROM eclipse-temurin:17-jdk
 
-# Set working directory
+ARG CACHE_BUST=1
+RUN echo "Cache bust: $CACHE_BUST"
+
 WORKDIR /app
 
-# Copy the built JAR into the container
-COPY target/timetable-backend-1.0.0.jar app.jar
+# Copy everything
+COPY . .
+
+# Build inside Docker (IMPORTANT)
+RUN ./mvnw clean package -DskipTests
 
 EXPOSE 8080
 
-# Run the JAR
-CMD ["java","-jar","app.jar"]
+CMD ["java", "-jar", "target/timetable-backend-1.0.0.jar"]
