@@ -51,7 +51,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(
+        config.setAllowedOriginPatterns(
                 List.of("http://localhost:3000",
                         "http://127.0.0.1:3000",
                         "https://schedulify01.netlify.app",
